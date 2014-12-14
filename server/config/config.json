@@ -1,0 +1,13 @@
+{
+  "development": {
+    "dialect": "sqlite",
+    "storage": "./test_databases/db.development.sqlite"
+  },
+  "production": {
+    "username": "picard",
+    "password": function(env){return env.MYSQLPASSWORD},
+    "database": "picard_data",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
