@@ -20,7 +20,7 @@ app.get("/*",function(request,response) //Fallback if the database is down or if
 {
 	response.send("Cannot connect to database. Please try again later.");
 });
-MongoClient.connect('mongodb://'+process.env.MONGOUSERNAME+':'+process.env.MONGOPASSWORD+'@'+process.env.MONGOURL, 
+MongoClient.connect('mongodb://'+process.env.MONGOURL, 
 	function(err, db) {
 		if(err) throw err;
 
