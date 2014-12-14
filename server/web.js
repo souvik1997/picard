@@ -26,7 +26,7 @@ MongoClient.connect('mongodb://'+process.env.MONGOURL,
 		if(err) throw err;
 
 		app.routes.get = []; //Clear routes
-		app.get(prefix+"data/":date_identifier",function(request,response)	{
+		app.get(prefix+"data/:date_identifier",function(request,response)	{
 			db.collection('data',function(err,collection){
 				collection.find({date:date_identifier}).toArray(
 				function(err,items)
