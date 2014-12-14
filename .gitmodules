@@ -1,0 +1,3 @@
+[submodule "pyobd"]
+	path = pyobd
+	url = https://github.com/martinohanlon/pyobd
