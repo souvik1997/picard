@@ -3,20 +3,21 @@ var fs = require('fs');
 var jade = require('jade');
 var app = express();
 var moment = require('moment');
+var prefix="/picard/";
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 8991;
 app.use(express.bodyParser());
 app.use(express.cookieParser())
 var MongoClient = require('mongodb').MongoClient;
 app.locals.pretty = true;
 
-app.use("/static",express.static(__dirname+"/static"));
+app.use(prefix+"static",express.static(__dirname+"/static"));
 
 app.listen(port, function() {                           
   console.log("Listening on " + port);
 });
-app.get("/*",function(request,response) //Fallback if the database is down or if a connection has not been established
+app.get("prefix+/*",function(request,response) //Fallback if the database is down or if a connection has not been established
 {
 	response.send("Cannot connect to database. Please try again later.");
 });
@@ -25,7 +26,7 @@ MongoClient.connect('mongodb://'+process.env.MONGOURL,
 		if(err) throw err;
 
 		app.routes.get = []; //Clear routes
-		app.get("/data/:date_identifier",function(request,response)	{
+		app.get("prefix+/data/:date_identifier",function(request,response)	{
 			db.collection('data',function(err,collection){
 				collection.find({date:date_identifier}).toArray(
 				function(err,items)
@@ -35,7 +36,7 @@ MongoClient.connect('mongodb://'+process.env.MONGOURL,
 				});
 			});
 		});
-		app.post("/post/",function(request,response){
+		app.post("prefix+/post/",function(request,response){
 			var str = request.body.data;
 		    var date_identifier = moment(Date.now()).format('YYYY-MM-DD')
 			var data = JSON.parse(str).data;
@@ -50,7 +51,7 @@ MongoClient.connect('mongodb://'+process.env.MONGOURL,
 				});
 			});
 		});
-		app.get("/",function(request,response) {
+		app.get("prefix+/",function(request,response) {
 			db.collection('data',function(err,collection){
 				collection.distinct("date",
 					function(err,items)
