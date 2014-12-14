@@ -10,11 +10,11 @@ cur = db.cursor()
 print(prefix)
 @route(prefix+'get/<vin>/<timestamp>/<field>')
 def get_data(vin,timestamp,field):
-	return json.dumps(cur.execute("SELECT "+field+" FROM "+vin+" WHERE timestamp = "+timestamp).fetchall())
+	return "["+json.dumps(cur.execute("SELECT "+field+" FROM "+vin+" WHERE timestamp = "+timestamp).fetchall()).replace("[","").replace("]","")+"]"
 
 @route(prefix+'get/<vin>/<timestamp_begin>/<timestamp_end>/<field>')
 def get_data(vin,timestamp_begin, timestamp_end, field):
-	return json.dumps(cur.execute("SELECT "+field+" FROM "+vin+" WHERE timestamp >= "+timestamp_begin+" AND timestamp < " +timestamp_end).fetchall())
+	return "["+json.dumps(cur.execute("SELECT "+field+" FROM "+vin+" WHERE timestamp >= "+timestamp_begin+" AND timestamp < " +timestamp_end).fetchall()).replace("[","").replace("]","")+"]"
 
 @post(prefix+'post')
 def post_data():
