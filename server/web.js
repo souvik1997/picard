@@ -25,13 +25,13 @@ MongoClient.connect('mongodb://'+process.env.MONGOUSERNAME+':'+process.env.MONGO
 		if(err) throw err;
 
 		app.routes.get = []; //Clear routes
-		app.get("/get/:date_identifier",function(request,response)	{
+		app.get("/data/:date_identifier",function(request,response)	{
 			db.collection('data',function(err,collection){
 				collection.find({date:date_identifier}).toArray(
 				function(err,items)
 				{
 					if (items != null)
-						response.render("app",{indata:items});
+						response.send(JSON.stringify(items));
 				});
 			});
 		});
@@ -56,7 +56,7 @@ MongoClient.connect('mongodb://'+process.env.MONGOUSERNAME+':'+process.env.MONGO
 					function(err,items)
 					{
 						if (items != null)
-							response.render("index",{dates:items});
+							response.render("index",{dates:items,uriprefix:"data"});
 					});
 			});
 		});
