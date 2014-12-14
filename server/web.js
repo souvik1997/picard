@@ -17,7 +17,7 @@ app.use(prefix+"static",express.static(__dirname+"/static"));
 app.listen(port, function() {                           
   console.log("Listening on " + port);
 });
-app.get("prefix+/*",function(request,response) //Fallback if the database is down or if a connection has not been established
+app.get(prefix+"/*",function(request,response) //Fallback if the database is down or if a connection has not been established
 {
 	response.send("Cannot connect to database. Please try again later.");
 });
@@ -26,7 +26,7 @@ MongoClient.connect('mongodb://'+process.env.MONGOURL,
 		if(err) throw err;
 
 		app.routes.get = []; //Clear routes
-		app.get("prefix+/data/:date_identifier",function(request,response)	{
+		app.get(prefix+"data/":date_identifier",function(request,response)	{
 			db.collection('data',function(err,collection){
 				collection.find({date:date_identifier}).toArray(
 				function(err,items)
@@ -36,7 +36,7 @@ MongoClient.connect('mongodb://'+process.env.MONGOURL,
 				});
 			});
 		});
-		app.post("prefix+/post/",function(request,response){
+		app.post(prefix+"/post/",function(request,response){
 			var str = request.body.data;
 		    var date_identifier = moment(Date.now()).format('YYYY-MM-DD')
 			var data = JSON.parse(str).data;
@@ -51,7 +51,7 @@ MongoClient.connect('mongodb://'+process.env.MONGOURL,
 				});
 			});
 		});
-		app.get("prefix+/",function(request,response) {
+		app.get(prefix,function(request,response) {
 			db.collection('data',function(err,collection){
 				collection.distinct("date",
 					function(err,items)
