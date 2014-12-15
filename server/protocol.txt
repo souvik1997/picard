@@ -1,0 +1,12 @@
+To get data:
+
+GET http://server_name:port/get/[VIN]/[TIMESTAMP]/[FIELD]
+or
+GET http://server_name:port/get/[VIN]/[TIMESTAMP_BEGIN]/[TIMESTAMP_END]/[FIELD]
+
+To input data:
+
+Send data in json format to http://server_name:port/post
+Example (httpie):
+	$ http -j POST localhost:8080/post timestamp=17 speed=22 vin=124542 rpm=3900
+
