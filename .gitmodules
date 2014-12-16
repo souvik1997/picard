@@ -1,3 +1,9 @@
 [submodule "pyobd"]
 	path = pyobd
 	url = https://github.com/martinohanlon/pyobd
+[submodule "server/static/bootstrap"]
+	path = server/static/bootstrap
+	url = https://github.com/twbs/bootstrap.git
+[submodule "server/static/jquery"]
+	path = server/static/jquery
+	url = https://github.com/jquery/jquery.git
