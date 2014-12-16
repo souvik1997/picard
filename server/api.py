@@ -11,12 +11,16 @@ cur.execute("CREATE TABLE IF NOT EXISTS defaulttable (timestamp timestamp, vin v
 cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS time_index ON defaulttable(timestamp)")
 print(prefix)
 @route(prefix+'get/<vin>/<timestamp>/<field>')
-def get_data(vin,timestamp,field):
-	return "["+json.dumps(cur.execute("SELECT "+field+" FROM defaulttable WHERE vin = ? and timestamp = ? ", (vin, timestamp)).fetchall()).replace("[","").replace("]","")+"]"
+def get_data_timestamp(vin,timestamp,field):
+	return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp = ? ", (vin, timestamp)).fetchall())
 
-@route(prefix+'get/<vin>/<timestamp_begin>/<timestamp_end>/<field>')
-def get_data(vin,timestamp_begin, timestamp_end, field):
-	return "["+json.dumps(cur.execute("SELECT "+field+" FROM defaulttable WHERE vin = ? and timestamp >= ? AND timestamp < ? ", (vin, timestamp_begin, timestamp_end)).fetchall()).replace("[","").replace("]","")+"]"
+@route(prefix+'get/<vin>/<timestamp_from>/<timestamp_to>/<field>')
+def get_data_timestamp_range(vin,timestamp_from, timestamp_to, field):
+	return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp >= ? AND timestamp < ? ", (vin, timestamp_from, timestamp_to)).fetchall())
+
+@route(prefix+'list/<field>')
+def get_data(field):
+	return "["+json.dumps(cur.execute("SELECT DISTINCT "+field+" FROM defaulttable ").fetchall()).replace("[","").replace("]","")+"]"
 
 @post(prefix+'post')
 def post_data():
