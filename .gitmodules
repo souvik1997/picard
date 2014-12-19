@@ -1,6 +1,6 @@
 [submodule "pyobd"]
 	path = pyobd
-	url = git://souvik@alt.souvik.me:/var/www/git/pyobd.git
+	url = git://alt.souvik.me/pyobd.git
 	branch = souvik
 [submodule "server/static/bootstrap"]
 	path = server/static/bootstrap
