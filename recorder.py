@@ -10,6 +10,7 @@ quit = False
 
 def signal_term_handler(signal, frame):
 	print("quitting...")
+	global quit
 	quit = True
 
 signal.signal(signal.SIGTERM, signal_term_handler)
@@ -27,7 +28,7 @@ def main():
 	parser.add_argument('-s','--serialdevice', help='serial device to use (like /dev/ttyS1)')
 	parser.add_argument('-t','--timeout', help='device timeout', default=60, type=int)
 	parser.add_argument('-r','--sensors', help='sensors to read: '+', '.join(list(SENSORS.keys())), nargs="+", required=True)
-	parser.add_argument('-o','--output', help='output file', type=argparse.FileType('w'), required=True)
+	parser.add_argument('-o','--output', help='output file', required=True)
 	args = parser.parse_args()
 	if args.devicetype == "bluetooth":
 		device = Device(Device.types['bluetooth'],bluetooth_mac=args.bluetoothmac,bluetooth_channel=args.bluetoothchannel, timeout=args.timeout)
@@ -37,20 +38,29 @@ def main():
 	time.sleep(0.1)
 	port.connect()
 	time.sleep(0.1)
+	port.ready()
 	print("Version: "+port.get_elm_version())
 
-	header = list(args.sensors)
-	header.insert(0,'time')
-	writer = csv.DictWriter(args.output, fieldnames=header)
-	writer.writeheader()
-	starttime = 0
-	while quit == False:
-		begin = time.time()
-		dict = {}
-		for sensor in args.sensors:
-			dict[sensor] = port.sensor(sensor)[1]
-		writer.writerow(dict)
-		time.sleep (1.0 - (time.time() - begin))
+
+	with open(args.output, 'w') as csvfile:
+		header = list(args.sensors)
+		header.insert(0,'time')
+		writer = csv.DictWriter(csvfile, fieldnames=header)
+		writer.writeheader()
+		starttime = time.time()
+		global quit
+		while quit == False:
+			begin = time.time()
+			dict = {}
+			for sensor in args.sensors:
+				val = port.sensor(sensor)[1]
+				print((sensor,val))
+				dict[sensor] = val
+			dict['time'] = time.time()-starttime
+			writer.writerow(dict)
+			length = 1.0 - (time.time() - begin)
+			if length > 0:
+				time.sleep(length)
 	port.close()
 	sys.exit(0)
 
