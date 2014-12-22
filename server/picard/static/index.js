@@ -10,7 +10,7 @@ var generateDropdownElement = function(obj) {
 	return '<li role="presentation"><a role="menuitem" tabindex="-1" href="#" onclick=\'selectCar("'+obj+'")\'>'+obj+'</a></li>'
 }
 var selectCar = function(obj) {
-	$("#dropdownMenu1").text(obj+'<span class="caret"></span>')
+	$("#dropdownMenu1").html(obj+'<span class="caret"></span>')
 	loadData(obj,start.valueOf(),end.valueOf())
 }
 var chart = new Highcharts.Chart({
