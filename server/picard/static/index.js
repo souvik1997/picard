@@ -11,7 +11,7 @@ var generateDropdownElement = function(obj) {
 }
 var selectCar = function(obj) {
 	$("#dropdownMenu1").html(obj+' <span class="caret"></span>')
-	chart.setTitle({text:'On Board Diagnostic Data'},{text:'Data collected from a'+obj}, false)
+	chart.setTitle({text:'On Board Diagnostic Data'},{text:'Data collected from a '+obj}, false)
 	loadData(obj,start.valueOf(),end.valueOf())
 }
 var chart = new Highcharts.Chart({
