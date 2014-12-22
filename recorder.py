@@ -1,4 +1,4 @@
-from pyobd import Device, OBDPort, SENSORS
+from obdython import Device, OBDPort, SENSORS
 import time
 import sys
 import argparse
