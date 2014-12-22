@@ -1,10 +1,3 @@
-
-<script src="jquery.min.js"></script>
-<script src="highcharts.js"></script>
-<script src="exporting.js"></script>
-<div id="chart-container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-
-<script>
 var prefix="../api/"
 Highcharts.setOptions({
 	global : {
@@ -18,10 +11,10 @@ chart = new Highcharts.Chart({
 		zoomType: 'x'
 	},
 	title: {
-		text: 'Car data'
+		text: 'On Board Diagnostic Data'
 	},
 	subtitle: {
-		text: 'Irregular time data in Highcharts JS'
+		text: 'Data collected from a 1999 Honda Accord'
 	},
 	xAxis: {
 		type: 'datetime',
@@ -167,5 +160,3 @@ loadData = function(vin, begin_time, end_time){$.ajax({
 		})
 	}
 })}
-$(loadData(1,0,18000000000000000))
-</script>
