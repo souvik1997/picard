@@ -1,16 +1,20 @@
 from bottle import request, response, route, run, post, template
 import os
-import sqlite3
+import MySQLdb
 import csv
 import json
 import codecs
 
 prefix=os.environ['PICARD_PREFIX']
 port=os.environ['PICARD_PORT']
+username = os.environ['PICARD_DB_USERNAME']
+password = os.environ['PICARD_DB_PASSWORD']
+host = os.environ['PICARD_DB_HOST']
+database = os.environ['PICARD_DB']
 
-db = sqlite3.connect("test.db")
+db = MySQLdb.connect(host=host, user=username, password=password, db=database)
 cur = db.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS defaulttable (timestamp timestamp, vin varchar(17), rpm decimal, speed decimal, temp integer, load decimal)")
+cur.execute("CREATE TABLE IF NOT EXISTS defaulttable (timestamp timestamp, vin varchar(50), rpm decimal, speed decimal, temp integer, load decimal)")
 cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS time_index ON defaulttable(timestamp)")
 
 # SELECT CAST(avg(timestamp) as integer), avg(speed) from defaulttable group by strftime('%M',datetime(timestamp, 'unixepoch')) order by timestamp;
@@ -29,7 +33,7 @@ def get_data_timestamp(vin,timestamp,field):
 	if validate(field):
 		try:
 			json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp = ? ", (vin, timestamp)).fetchall())
-		except sqlite3.Warning:
+		except:
 			return 'error'
 	else:
 		return 'error'
@@ -39,7 +43,7 @@ def get_data_timestamp_range(vin,timestamp_from, timestamp_to, field):
 	if validate(field):
 		try:
 			return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp >= ? AND timestamp < ? ", (vin, timestamp_from, timestamp_to)).fetchall())
-		except sqlite3.Warning:
+		except:
 			return 'error'
 	else:
 		return 'error'
@@ -50,7 +54,7 @@ def get_data(field):
 	if validate(field):
 		try:
 			return "["+json.dumps(cur.execute("SELECT DISTINCT "+field+" FROM defaulttable ").fetchall()).replace("[","").replace("]","")+"]"
-		except sqlite3.Warning:
+		except:
 			return 'error'
 	else:
 		return 'error'
