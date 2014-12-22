@@ -9,9 +9,11 @@ Highcharts.setOptions({
 var generateDropdownElement = function(obj) {
 	return '<li role="presentation"><a role="menuitem" tabindex="-1" href="#" onclick=\'selectCar("'+obj+'")\'>'+obj+'</a></li>'
 }
+var selected_car = ""
 var selectCar = function(obj) {
 	$("#dropdownMenu1").html(obj+' <span class="caret"></span>')
 	chart.setTitle({text:'On Board Diagnostic Data'},{text:'Data collected from a '+obj}, false)
+	selected_car = obj
 	loadData(obj,start.valueOf(),end.valueOf())
 }
 var chart = new Highcharts.Chart({
@@ -321,7 +323,7 @@ $(document).ready(function() {
 			timePicker:true,
 			timePickerSeconds:true
 		}, function(start, end, label) {
-		loadData(1,start.valueOf(),end.valueOf())
+		loadData(selected_car,start.valueOf(),end.valueOf())
 	});
 	$('#daterange').val(start.format("MM/DD/YYYY") + " - " +end.format("MM/DD/YYYY"))
 	$.ajax({
