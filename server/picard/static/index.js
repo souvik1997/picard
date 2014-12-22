@@ -332,9 +332,11 @@ $(document).ready(function() {
 		success: function(data) {
 			var index, len;
 			arr = JSON.parse(data)
+			initial_car = arr[0]
 			for (index = 0, len = arr.length; index < len; ++index) {
 				$(".dropdown-menu").append(generateDropdownElement(arr[index]));
 			}
+			selectCar(initial_car)
 		}
 	});
 });
