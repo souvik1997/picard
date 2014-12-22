@@ -6,6 +6,7 @@ import json
 import codecs
 
 prefix=os.environ['PICARD_PREFIX']
+port=os.environ['PICARD_PORT']
 
 db = sqlite3.connect("test.db")
 cur = db.cursor()
@@ -56,4 +57,4 @@ def upload_data():
 	db.commit()
 	return 'OK'
 
-run(host='localhost', port=8080, debug=True)
+run(host='localhost', port=port, debug=True)
