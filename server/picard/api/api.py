@@ -17,30 +17,44 @@ cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS time_index ON defaulttable(timest
 # SELECT strftime('%s',(strftime('%Y-%m-%d %H:%M',datetime(timestamp, 'unixepoch')))) as 'Timestamp', avg(speed) from defaulttable group by 1;
 
 print(prefix)
+
+def validate(field):
+	if field not in ['vin','timestamp','rpm','speed','temp','load']:
+		return False
+	else:
+		return True
+
 @route(prefix+'get/<vin>/<timestamp>/<field>')
 def get_data_timestamp(vin,timestamp,field):
-	return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp = ? ", (vin, timestamp)).fetchall())
+	if validate(field):
+		try:
+			json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp = ? ", (vin, timestamp)).fetchall())
+		except sqlite3.Warning:
+			return 'error'
+	else:
+		return 'error'
 
 @route(prefix+'get/<vin>/<timestamp_from>/<timestamp_to>/<field>')
 def get_data_timestamp_range(vin,timestamp_from, timestamp_to, field):
-	return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp >= ? AND timestamp < ? ", (vin, timestamp_from, timestamp_to)).fetchall())
+	if validate(field):
+		try:
+			return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp >= ? AND timestamp < ? ", (vin, timestamp_from, timestamp_to)).fetchall())
+		except sqlite3.Warning:
+			return 'error'
+	else:
+		return 'error'
+
 
 @route(prefix+'list/<field>')
 def get_data(field):
-	return "["+json.dumps(cur.execute("SELECT DISTINCT "+field+" FROM defaulttable ").fetchall()).replace("[","").replace("]","")+"]"
+	if validate(field):
+		try:
+			return "["+json.dumps(cur.execute("SELECT DISTINCT "+field+" FROM defaulttable ").fetchall()).replace("[","").replace("]","")+"]"
+		except sqlite3.Warning:
+			return 'error'
+	else:
+		return 'error'
 
-@route(prefix+'oper/<vin>/<timestamp_from>/<timestamp_to>/<field>/<job>/<interval>')
-def exec_operation(vin, timestamp_from, timestamp_to, field, job, interval):
-	intervals = {'minute': '%Y-%m-%d %H:%M', 'hour':'%Y-%m-%d %H', 'day':'%Y-%m-%d', 'month':'%Y-%m', 'year': '%Y'}
-	print("SELECT strftime('%s',(strftime("+intervals[interval]+",datetime(timestamp, 'unixepoch')))) as 'Timestamp', "+job+"("+field+") from defaulttable WHERE vin = ? and timestamp >= ? AND timestamp < ? )")
-	return json.dumps(cur.execute("SELECT strftime('%s',(strftime('"+intervals[interval]+"',datetime(timestamp, 'unixepoch')))) as 'Timestamp', "+job+"("+field+") from defaulttable WHERE vin = ? and timestamp >= ? AND timestamp < ? GROUP BY 1", (vin, timestamp_from, timestamp_to)).fetchall()).replace('"','')
-
-@post(prefix+'post')
-def post_data():
-	request.content_type = 'application/json'
-	cur.execute("INSERT INTO defaulttable VALUES (?,?,?,?)", (request.json["timestamp"], request.json["vin"], request.json["speed"], request.json["rpm"]))
-	db.commit()
-	
 @post(prefix+'upload')
 def upload_data():
 	initial_time   = request.forms.get('initial_time')
