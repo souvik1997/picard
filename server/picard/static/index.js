@@ -7,7 +7,7 @@ Highcharts.setOptions({
 	}
 });
 var generateDropdownElement = function(obj) {
-	return '<li role="presentation"><a role="menuitem" tabindex="-1" href="#" onclick=selectCar('+obj+')>'+obj+'</a></li>'
+	return '<li role="presentation"><a role="menuitem" tabindex="-1" href="#" onclick=\'selectCar("'+obj+'")\'>'+obj+'</a></li>'
 }
 var selectCar = function(obj) {
 	$("#dropdownMenu1").text(obj+'<span class="caret"></span>')
