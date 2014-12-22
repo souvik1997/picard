@@ -15,7 +15,6 @@ database = os.environ['PICARD_DB']
 db = pymysql.connect(host=host, user=username, password=password, db=database)
 cur = db.cursor()
 cur.execute("CREATE TABLE IF NOT EXISTS picardtable (timestamp timestamp, vehicle_id varchar(50), rpm decimal, speed decimal, temp integer, engine_load decimal)")
-cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS time_index ON picardtable(timestamp)")
 
 # SELECT CAST(avg(timestamp) as integer), avg(speed) from picardtable group by strftime('%M',datetime(timestamp, 'unixepoch')) order by timestamp;
 # SELECT strftime('%s',(strftime('%Y-%m-%d %H:%M',datetime(timestamp, 'unixepoch')))) as 'Timestamp', avg(speed) from picardtable group by 1;
