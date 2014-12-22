@@ -315,3 +315,25 @@ loadData = function(vehicle_id, begin_time, end_time){$.ajax({
 		})
 	}
 })}
+$(document).ready(function() {
+	$('#daterange').daterangepicker(
+		{
+			endDate:end.toDate(), 
+			startDate:start.toDate(),
+			timePicker:true,
+			timePickerSeconds:true
+		}, function(start, end, label) {
+		loadData(1,start.valueOf(),end.valueOf())
+	});
+	$('#daterange').val(start.format("MM/DD/YYYY") + " - " +end.format("MM/DD/YYYY"))
+	$.ajax({
+		type:"GET",
+		url: prefix+"list/vehicle_id",
+		success: function(data) {
+			var index, len;
+			for (index = 0, len = data.length; index < len; ++index) {
+				$(".dropdown-menu").append(generateDropdownElement(data[index]));
+			}
+		}
+	});
+});
