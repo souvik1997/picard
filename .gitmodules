@@ -1,5 +1,5 @@
 [submodule "pyobd"]
-	path = pyobd
+	path = obdython
 	url = git://alt.souvik.me/pyobd.git
 	url = https://github.com/souvik1997/pyobd.git
 	branch = souvik
