@@ -10,7 +10,7 @@ port=os.environ['PICARD_PORT']
 
 db = sqlite3.connect("test.db")
 cur = db.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS defaulttable (timestamp timestamp, vin varchar(17), rpm decimal, speed decimal, temp integer, load decimal)")
+cur.execute("CREATE TABLE IF NOT EXISTS defaulttable (timestamp timestamp, vehicle_id varchar(50), rpm decimal, speed decimal, temp integer, load decimal)")
 cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS time_index ON defaulttable(timestamp)")
 
 # SELECT CAST(avg(timestamp) as integer), avg(speed) from defaulttable group by strftime('%M',datetime(timestamp, 'unixepoch')) order by timestamp;
@@ -19,26 +19,26 @@ cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS time_index ON defaulttable(timest
 print(prefix)
 
 def validate(field):
-	if field not in ['vin','timestamp','rpm','speed','temp','load']:
+	if field not in ['vehicle_id','timestamp','rpm','speed','temp','load']:
 		return False
 	else:
 		return True
 
-@route(prefix+'get/<vin>/<timestamp>/<field>')
-def get_data_timestamp(vin,timestamp,field):
+@route(prefix+'get/<vehicle_id>/<timestamp>/<field>')
+def get_data_timestamp(vehicle_id,timestamp,field):
 	if validate(field):
 		try:
-			json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp = ? ", (vin, timestamp)).fetchall())
+			json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vehicle_id = ? and timestamp = ? ", (vehicle_id, timestamp)).fetchall())
 		except sqlite3.Warning:
 			return 'error'
 	else:
 		return 'error'
 
-@route(prefix+'get/<vin>/<timestamp_from>/<timestamp_to>/<field>')
-def get_data_timestamp_range(vin,timestamp_from, timestamp_to, field):
+@route(prefix+'get/<vehicle_id>/<timestamp_from>/<timestamp_to>/<field>')
+def get_data_timestamp_range(vehicle_id,timestamp_from, timestamp_to, field):
 	if validate(field):
 		try:
-			return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vin = ? and timestamp >= ? AND timestamp < ? ", (vin, timestamp_from, timestamp_to)).fetchall())
+			return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM defaulttable WHERE vehicle_id = ? and timestamp >= ? AND timestamp < ? ", (vehicle_id, timestamp_from, timestamp_to)).fetchall())
 		except sqlite3.Warning:
 			return 'error'
 	else:
@@ -58,7 +58,7 @@ def get_data(field):
 @post(prefix+'upload')
 def upload_data():
 	initial_time   = request.forms.get('initial_time')
-	vin   = request.forms.get('vin')
+	vehicle_id   = request.forms.get('vehicle_id')
 	upload     = request.files.get('upload')
 	name, ext = os.path.splitext(upload.filename)
 	if ext not in ('.csv'):
@@ -66,8 +66,8 @@ def upload_data():
 	upload.save("/tmp/temp.csv", overwrite=True)
 	with open("/tmp/temp.csv","r") as csvfile:
 		dr = csv.DictReader(csvfile)
-		to_db = [(int(1000*((float(i['time'])+float(initial_time)))), vin, float(i['rpm']), float(i['speed']), int(i['temp']), float(i['load'])) for i in dr]
-		cur.executemany("INSERT INTO defaulttable (timestamp, vin, rpm, speed, temp, load) VALUES (?, ?, ?, ?, ?, ?);", to_db)
+		to_db = [(int(1000*((float(i['time'])+float(initial_time)))), vehicle_id, float(i['rpm']), float(i['speed']), int(i['temp']), float(i['load'])) for i in dr]
+		cur.executemany("INSERT INTO defaulttable (timestamp, vehicle_id, rpm, speed, temp, load) VALUES (?, ?, ?, ?, ?, ?);", to_db)
 	db.commit()
 	return 'OK'
 
