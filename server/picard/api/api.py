@@ -70,7 +70,7 @@ def upload_data():
 	with open("/tmp/temp.csv","r") as csvfile:
 		dr = csv.DictReader(csvfile)
 		to_db = [(int(1000*((float(i['time'])+float(initial_time)))), vehicle_id, float(i['rpm']), int(i['speed']), int(i['temp']), float(i['load'])) for i in dr]
-		cur.executemany("INSERT INTO picardtable (timestamp, vehicle_id, rpm, speed, temp, engine_load) VALUES (%d, %s, %f, %d, %d, %f);", to_db)
+		cur.executemany("INSERT INTO picardtable (timestamp, vehicle_id, rpm, speed, temp, engine_load) VALUES (%s, %s, %s, %s, %s, %s);", to_db)
 	db.commit()
 	return 'OK'
 
