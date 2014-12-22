@@ -1,13 +1,15 @@
 from bottle import request, response, route, run, post, template
 import os
 import sqlite3
+import csv
 import json
+import codecs
 
 prefix=os.environ['PICARD_PREFIX']
 
 db = sqlite3.connect("test.db")
 cur = db.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS defaulttable (timestamp timestamp, vin varchar(17), speed decimal, rpm decimal)")
+cur.execute("CREATE TABLE IF NOT EXISTS defaulttable (timestamp timestamp, vin varchar(17), rpm decimal, speed decimal, temp integer, load decimal)")
 cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS time_index ON defaulttable(timestamp)")
 
 # SELECT CAST(avg(timestamp) as integer), avg(speed) from defaulttable group by strftime('%M',datetime(timestamp, 'unixepoch')) order by timestamp;
@@ -37,5 +39,21 @@ def post_data():
 	request.content_type = 'application/json'
 	cur.execute("INSERT INTO defaulttable VALUES (?,?,?,?)", (request.json["timestamp"], request.json["vin"], request.json["speed"], request.json["rpm"]))
 	db.commit()
+	
+@post(prefix+'upload')
+def upload_data():
+	initial_time   = request.forms.get('initial_time')
+	vin   = request.forms.get('vin')
+	upload     = request.files.get('upload')
+	name, ext = os.path.splitext(upload.filename)
+	if ext not in ('.csv'):
+		return 'File extension not allowed.'
+	upload.save("/tmp/temp.csv", overwrite=True)
+	with open("/tmp/temp.csv","r") as csvfile:
+		dr = csv.DictReader(csvfile)
+		to_db = [(int(1000*((float(i['time'])+float(initial_time)))), vin, float(i['rpm']), float(i['speed']), int(i['temp']), float(i['load'])) for i in dr]
+		cur.executemany("INSERT INTO defaulttable (timestamp, vin, rpm, speed, temp, load) VALUES (?, ?, ?, ?, ?, ?);", to_db)
+	db.commit()
+	return 'OK'
 
 run(host='localhost', port=8080, debug=True)

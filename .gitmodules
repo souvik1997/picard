@@ -8,3 +8,12 @@
 [submodule "server/static/jquery"]
 	path = server/static/jquery
 	url = https://github.com/jquery/jquery.git
+[submodule "server/static/highcharts.com"]
+	path = server/static/highcharts.com
+	url = https://github.com/highslide-software/highcharts.com.git
+[submodule "server/static/moment"]
+	path = server/static/moment
+	url = https://github.com/moment/moment.git
+[submodule "server/static/bootstrap-daterangepicker"]
+	path = server/static/bootstrap-daterangepicker
+	url = https://github.com/dangrossman/bootstrap-daterangepicker.git
