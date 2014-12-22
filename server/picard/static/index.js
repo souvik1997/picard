@@ -331,8 +331,9 @@ $(document).ready(function() {
 		url: prefix+"list/vehicle_id",
 		success: function(data) {
 			var index, len;
-			for (index = 0, len = data.length; index < len; ++index) {
-				$(".dropdown-menu").append(generateDropdownElement(data[index]));
+			arr = JSON.parse(data)
+			for (index = 0, len = arr.length; index < len; ++index) {
+				$(".dropdown-menu").append(generateDropdownElement(arr[index]));
 			}
 		}
 	});
