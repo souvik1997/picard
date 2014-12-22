@@ -10,7 +10,8 @@ var generateDropdownElement = function(obj) {
 	return '<li role="presentation"><a role="menuitem" tabindex="-1" href="#" onclick=\'selectCar("'+obj+'")\'>'+obj+'</a></li>'
 }
 var selectCar = function(obj) {
-	$("#dropdownMenu1").html(obj+'<span class="caret"></span>')
+	$("#dropdownMenu1").html(obj+' <span class="caret"></span>')
+	chart.setTitle({text:'On Board Diagnostic Data'},{text:'Data collected from a'+obj}, false)
 	loadData(obj,start.valueOf(),end.valueOf())
 }
 var chart = new Highcharts.Chart({
@@ -21,9 +22,6 @@ var chart = new Highcharts.Chart({
 	},
 	title: {
 		text: 'On Board Diagnostic Data'
-	},
-	subtitle: {
-		text: 'Data collected from a 1999 Honda Accord'
 	},
 	xAxis: {
 		type: 'datetime',
