@@ -14,7 +14,7 @@ database = os.environ['PICARD_DB']
 
 db = pymysql.connect(host=host, user=username, password=password, db=database)
 cur = db.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS picardtable (timestamp timestamp, vehicle_id varchar(50), rpm decimal, speed decimal, temp integer, engine_load decimal)")
+cur.execute("CREATE TABLE IF NOT EXISTS picardtable (timestamp timestamp, vehicle_id varchar(50), rpm decimal, speed integer, temp integer, engine_load decimal)")
 
 # SELECT CAST(avg(timestamp) as integer), avg(speed) from picardtable group by strftime('%M',datetime(timestamp, 'unixepoch')) order by timestamp;
 # SELECT strftime('%s',(strftime('%Y-%m-%d %H:%M',datetime(timestamp, 'unixepoch')))) as 'Timestamp', avg(speed) from picardtable group by 1;
@@ -69,8 +69,8 @@ def upload_data():
 	upload.save("/tmp/temp.csv", overwrite=True)
 	with open("/tmp/temp.csv","r") as csvfile:
 		dr = csv.DictReader(csvfile)
-		to_db = [(int(1000*((float(i['time'])+float(initial_time)))), vehicle_id, float(i['rpm']), float(i['speed']), int(i['temp']), float(i['load'])) for i in dr]
-		cur.executemany("INSERT INTO picardtable (timestamp, vehicle_id, rpm, speed, temp, engine_load) VALUES (?, ?, ?, ?, ?, ?);", to_db)
+		to_db = [(int(1000*((float(i['time'])+float(initial_time)))), vehicle_id, float(i['rpm']), int(i['speed']), int(i['temp']), float(i['load'])) for i in dr]
+		cur.executemany("INSERT INTO picardtable (timestamp, vehicle_id, rpm, speed, temp, engine_load) VALUES (%d, %s, %f, %d, %d, %f);", to_db)
 	db.commit()
 	return 'OK'
 
