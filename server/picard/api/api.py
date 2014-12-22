@@ -28,20 +28,20 @@ def validate(field):
 		return True
 
 @route(prefix+'get/<vehicle_id>/<timestamp>/<field>')
-def get_data_timestamp(vin,timestamp,field):
+def get_data_timestamp(vehicle_id,timestamp,field):
 	if validate(field):
 		try:
-			json.dumps(cur.execute("SELECT timestamp,"+field+" FROM picardtable WHERE vehicle_id = ? and timestamp = ? ", (vin, timestamp)).fetchall())
+			json.dumps(cur.execute("SELECT timestamp,"+field+" FROM picardtable WHERE vehicle_id = ? and timestamp = ? ", (vehicle_id, timestamp)).fetchall())
 		except:
 			return 'error'
 	else:
 		return 'error'
 
 @route(prefix+'get/<vehicle_id>/<timestamp_from>/<timestamp_to>/<field>')
-def get_data_timestamp_range(vin,timestamp_from, timestamp_to, field):
+def get_data_timestamp_range(vehicle_id,timestamp_from, timestamp_to, field):
 	if validate(field):
 		try:
-			return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM picardtable WHERE vehicle_id = ? and timestamp >= ? AND timestamp < ? ", (vin, timestamp_from, timestamp_to)).fetchall())
+			return json.dumps(cur.execute("SELECT timestamp,"+field+" FROM picardtable WHERE vehicle_id = ? and timestamp >= ? AND timestamp < ? ", (vehicle_id, timestamp_from, timestamp_to)).fetchall())
 		except:
 			return 'error'
 	else:
@@ -70,7 +70,7 @@ def upload_data():
 	with open("/tmp/temp.csv","r") as csvfile:
 		dr = csv.DictReader(csvfile)
 		to_db = [(int(1000*((float(i['time'])+float(initial_time)))), vehicle_id, float(i['rpm']), float(i['speed']), int(i['temp']), float(i['load'])) for i in dr]
-		cur.executemany("INSERT INTO picardtable (timestamp, vin, rpm, speed, temp, engine_load) VALUES (?, ?, ?, ?, ?, ?);", to_db)
+		cur.executemany("INSERT INTO picardtable (timestamp, vehicle_id, rpm, speed, temp, engine_load) VALUES (?, ?, ?, ?, ?, ?);", to_db)
 	db.commit()
 	return 'OK'
 
