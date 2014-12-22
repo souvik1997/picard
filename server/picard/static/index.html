@@ -17,6 +17,12 @@
 				min-height: 2000px;
 				padding-top: 70px;
 			}
+			.dropdown-menu {
+				width: 100%;
+			}
+			.btn{
+				width: 100%;
+			}
 		</style>
 		<!-- Piwik -->
 		<script type="text/javascript">
@@ -59,18 +65,31 @@
 
 		<div class="container">
 			<div class="span12">
-				<div class="well">
-					<form class="form-horizontal">
-						<fieldset>
-						<div class="control-group">
-						<div class="controls">
-							<div class="input-prepend input-group">
-							<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span><input type="text" style="width: 200px" name="daterange" id="daterange" class="form-control" > 
+				<div class="well span12 well-large">
+					<div class="row">
+						<form class="form-horizontal col-md-10">
+							<fieldset>
+							<div class="control-group">
+							<div class="controls">
+								<div class="input-prepend input-group">
+								<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span><input type="text" style="width: 200px" name="daterange" id="daterange" class="form-control" >
+								</div>
 							</div>
+							</div>
+							</fieldset>
+						</form>
+						<div class="dropdown col-md-2">
+							<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+								Select...
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>
+								<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
+							</ul>
 						</div>
-						</div>
-						</fieldset>
-					</form>
+					</div>
 				</div>
 			</div>
 			<div class="span12">
@@ -94,8 +113,6 @@
 		<script src="index.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function() {
-				end = moment()
-				start = moment().subtract(1, 'month')
 				$('#daterange').daterangepicker(
 					{
 						endDate:end.toDate(), 
@@ -106,7 +123,16 @@
 					loadData(1,start.valueOf(),end.valueOf())
 				});
 				$('#daterange').val(start.format("MM/DD/YYYY") + " - " +end.format("MM/DD/YYYY"))
-				loadData(1,start.valueOf(),end.valueOf())
+				$.ajax({
+					type:"GET",
+					url: prefix+"list/vehicle_id",
+					success: function(data) {
+						var index, len;
+						for (index = 0, len = data.length; index < len; ++index) {
+							$(".dropdown-menu").append(generateDropdownElement(data[index]));
+						}
+					}
+				});
 			});
 		</script>
 	</body>

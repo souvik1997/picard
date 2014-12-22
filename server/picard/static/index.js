@@ -1,9 +1,18 @@
 var prefix="../api/"
+var end = moment()
+var start = moment().subtract(1, 'month')
 Highcharts.setOptions({
 	global : {
 		useUTC : false
 	}
 });
+var generateDropdownElement = function(obj) {
+	return '<li role="presentation"><a role="menuitem" tabindex="-1" href="#" onclick=selectCar('+obj+')>'+obj+'</a></li>'
+}
+var selectCar = function(obj) {
+	$("#dropdownMenu1").text(obj+'<span class="caret"></span>')
+	loadData(obj,start.valueOf(),end.valueOf())
+}
 var chart = new Highcharts.Chart({
 	chart: {
 		type: 'spline',
@@ -259,6 +268,7 @@ differentiate = function(values){
 	}
 	return res
 }
+
 integrate = function(values){
 	//Needs at least 2 points
 	if (values.length < 2)
@@ -273,14 +283,14 @@ integrate = function(values){
 	}
 	return res
 }
-loadData = function(vin, begin_time, end_time){$.ajax({
+loadData = function(vehicle_id, begin_time, end_time){$.ajax({
 	type:"GET",
-	url: prefix+"get/"+vin+"/"+begin_time+"/"+end_time+"/rpm",
+	url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/rpm",
 	success:function(msg){
 		chart.series[0].setData(JSON.parse(msg),false);
 		$.ajax({
 			type:"GET",
-			url: prefix+"get/"+vin+"/"+begin_time+"/"+end_time+"/speed",
+			url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/speed",
 			success:function(msg){
 				vel = JSON.parse(msg);
 				chart.series[1].setData(vel,false);
@@ -289,12 +299,12 @@ loadData = function(vin, begin_time, end_time){$.ajax({
 				position_chart.series[0].setData(integrate(vel),true);
 				$.ajax({
 					type:"GET",
-					url: prefix+"get/"+vin+"/"+begin_time+"/"+end_time+"/load",
+					url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/load",
 					success:function(msg){
 						chart.series[2].setData(JSON.parse(msg),false);
 						$.ajax({
 							type:"GET",
-							url: prefix+"get/"+vin+"/"+begin_time+"/"+end_time+"/temp",
+							url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/temp",
 							success:function(msg){
 								chart.series[3].setData(JSON.parse(msg),true);
 							}
