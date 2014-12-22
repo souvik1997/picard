@@ -332,7 +332,7 @@ $(document).ready(function() {
 			arr = JSON.parse(data)
 			initial_car = arr[0]
 			for (index = 0, len = arr.length; index < len; ++index) {
-				$(".dropdown-menu").append(generateDropdownElement(arr[index]));
+				$("#dropdownul").append(generateDropdownElement(arr[index]));
 			}
 			selectCar(initial_car)
 		}
