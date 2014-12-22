@@ -1,6 +1,6 @@
 from bottle import request, response, route, run, post, template
 import os
-import MySQLdb
+import pymysql
 import csv
 import json
 import codecs
@@ -12,7 +12,7 @@ password = os.environ['PICARD_DB_PASSWORD']
 host = os.environ['PICARD_DB_HOST']
 database = os.environ['PICARD_DB']
 
-db = MySQLdb.connect(host=host, user=username, password=password, db=database)
+db = pymysql.connect(host=host, user=username, password=password, db=database)
 cur = db.cursor()
 cur.execute("CREATE TABLE IF NOT EXISTS defaulttable (timestamp timestamp, vin varchar(50), rpm decimal, speed decimal, temp integer, load decimal)")
 cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS time_index ON defaulttable(timestamp)")
