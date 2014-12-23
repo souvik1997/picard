@@ -207,14 +207,14 @@ var vel_accel_chart = new Highcharts.Chart({
 	]
 });
 
-var position_chart = new Highcharts.Chart({
+var distance_chart = new Highcharts.Chart({
 	chart: {
 		type: 'spline',
-		renderTo: 'position-chart-container',
+		renderTo: 'distance-chart-container',
 		zoomType: 'x'
 	},
 	title: {
-		text: 'Position'
+		text: 'Distance'
 	},
 	xAxis: {
 		type: 'datetime',
@@ -225,7 +225,7 @@ var position_chart = new Highcharts.Chart({
 	yAxis: [
 		{
 			title: {
-				text: 'Position (km)',
+				text: 'Distance (km)',
 				style: {
 					color: Highcharts.getOptions().colors[0]
 				}
@@ -245,7 +245,7 @@ var position_chart = new Highcharts.Chart({
 
 	series: [
 		{
-			name:'Position',
+			name:'Distance',
 			yAxis:0,
 			tooltip:{ valueSuffix:' km'},
 			data:[],
@@ -275,7 +275,7 @@ integrate = function(values){
 		return null
 	sum = 0
 	res = []
-	res.push([values[0][0],sum]) //initial position at 0
+	res.push([values[0][0],sum]) //initial distance at 0
 	for(var x = 1; x < values.length; x++)
 	{
 		sum += (values[x][1]+values[x-1][1])/2 * (values[x][0]-values[x-1][0])/3600000
@@ -296,7 +296,7 @@ loadData = function(vehicle_id, begin_time, end_time){$.ajax({
 				chart.series[1].setData(vel,false);
 				vel_accel_chart.series[0].setData(vel,false);
 				vel_accel_chart.series[1].setData(differentiate(vel),true);
-				position_chart.series[0].setData(integrate(vel),true);
+				distance_chart.series[0].setData(integrate(vel),true);
 				$.ajax({
 					type:"GET",
 					url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/load",
