@@ -169,7 +169,7 @@ var vel_accel_chart = new Highcharts.Chart({
 		},
 		{
 			title: {
-				text: 'Acceleration (km/h/h)',
+				text: 'Acceleration (km/h/s)',
 				style: {
 					color: Highcharts.getOptions().colors[1]
 				}
@@ -198,7 +198,7 @@ var vel_accel_chart = new Highcharts.Chart({
 		{
 			name:'Acceleration',
 			yAxis:0,
-			tooltip:{ valueSuffix:' km/h/h'},
+			tooltip:{ valueSuffix:' km/h/s'},
 			data:[],
 			style: {
 					color: Highcharts.getOptions().colors[1]
@@ -263,7 +263,7 @@ differentiate = function(values){
 	res = []
 	for(var x = 1; x < values.length-1; x++)
 	{
-		slope = (values[x+1][1]-values[x-1][1])/(values[x+1][0]-values[x-1][0])*3600
+		slope = (values[x+1][1]-values[x-1][1])/(values[x+1][0]-values[x-1][0])
 		res.push([values[x][0],slope])
 	}
 	return res
