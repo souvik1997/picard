@@ -263,7 +263,7 @@ differentiate = function(values){
 	res = []
 	for(var x = 1; x < values.length-1; x++)
 	{
-		slope = (values[x+1][1]-values[x-1][1])/(values[x+1][0]-values[x-1][0])
+		slope = (values[x+1][1]-values[x-1][1])/(values[x+1][0]-values[x-1][0]) * 1000
 		res.push([values[x][0],slope])
 	}
 	return res
