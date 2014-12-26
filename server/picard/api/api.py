@@ -64,14 +64,14 @@ def upload_data():
 	if ext not in ('.csv'):
 		return 'File extension not allowed.'
 	upload.save("/tmp/temp.csv", overwrite=True)
-	cur.execute("INSERT INTO defaulttable (timestamp, vehicle_id, rpm, speed, temp, load) VALUES (?, ?, ?, ?, ?, ?);",(int(float(initial_time)*1000)),vehicle_id,0,0,0,0))
+	cur.execute("INSERT INTO defaulttable (timestamp, vehicle_id, rpm, speed, temp, load) VALUES (?, ?, ?, ?, ?, ?)",(int(float(initial_time)*1000),vehicle_id,0,0,0,0))
 	curtime = 0
 	with open("/tmp/temp.csv","r") as csvfile:
 		dr = csv.DictReader(csvfile)
 		to_db = [(int(1000*((float(i['time'])+float(initial_time)))), vehicle_id, float(i['rpm']), float(i['speed']), int(i['temp']), float(i['load'])) for i in dr]
 		curtime = to_db[len(to_db)-1][0]
 		cur.executemany("INSERT INTO defaulttable (timestamp, vehicle_id, rpm, speed, temp, load) VALUES (?, ?, ?, ?, ?, ?);", to_db)
-	cur.execute("INSERT INTO defaulttable (timestamp, vehicle_id, rpm, speed, temp, load) VALUES (?, ?, ?, ?, ?, ?);",(curtime+1,vehicle_id,0,0,0,0))
+	cur.execute("INSERT INTO defaulttable (timestamp, vehicle_id, rpm, speed, temp, load) VALUES (?, ?, ?, ?, ?, ?)",(curtime+1,vehicle_id,0,0,0,0))
 	db.commit()
 	return 'OK'
 
