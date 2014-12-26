@@ -382,20 +382,20 @@ var rpm_pie_chart = new Highcharts.Chart({
 		}
 	]
 });
-differentiate = function(values){
+differentiate = function(values, k){
 	// Needs at least 3 points
 	if (values.length < 3)
 		return null
 	res = []
 	for(var x = 1; x < values.length-1; x++)
 	{
-		slope = (values[x+1][1]-values[x-1][1])/(values[x+1][0]-values[x-1][0]) * 1000
+		slope = (values[x+1][1]-values[x-1][1])/(values[x+1][0]-values[x-1][0]) * k
 		res.push([values[x][0],slope])
 	}
 	return res
 }
 
-integrate = function(values){
+integrate = function(values, k){
 	//Needs at least 2 points
 	if (values.length < 2)
 		return null
@@ -404,7 +404,7 @@ integrate = function(values){
 	res.push([values[0][0],sum]) //initial distance at 0
 	for(var x = 1; x < values.length; x++)
 	{
-		sum += (values[x][1]+values[x-1][1])/2 * (values[x][0]-values[x-1][0])/3600000
+		sum += (values[x][1]+values[x-1][1])/2 * (values[x][0]-values[x-1][0])/k
 		res.push([values[x][0],sum])
 	}
 	return res
@@ -452,9 +452,9 @@ loadData = function(vehicle_id, begin_time, end_time){$.ajax({
 				vel = JSON.parse(msg);
 				chart.series[1].setData(vel,false);
 				vel_accel_chart.series[0].setData(vel,false);
-				var acc = differentiate(vel)
+				var acc = differentiate(vel,1000)
 				vel_accel_chart.series[1].setData(acc,true);
-				var dist = integrate(vel);
+				var dist = integrate(vel,3600000);
 				distance_chart.series[0].setData(dist,true);
 				var velrpm = [];
 				for(var i = 0; i < vel.length; i++)
@@ -462,7 +462,7 @@ loadData = function(vehicle_id, begin_time, end_time){$.ajax({
 					velrpm.push([vel[i][1],rpm[i][1]]);
 				}
 				vel_rpm_chart.series[0].setData(velrpm,true);
-				var drpm = differentiate(rpm);
+				var drpm = differentiate(rpm,1);
 				var acceldrpm = [];
 				for (var i = 0; i < acc.length; i++)
 				{
