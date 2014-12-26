@@ -256,6 +256,96 @@ var distance_chart = new Highcharts.Chart({
 	]
 });
 
+var vel_rpm_chart = new Highcharts.Chart({
+	chart: {
+		type: 'scatter',
+		renderTo: 'vel-rpm-chart-container',
+		zoomType: 'xy'
+	},
+	title: {
+		text: 'RPM vs. Speed'
+	},
+	xAxis: {
+		title: {
+			enabled: true,
+			text: 'Speed (km/h)'
+		}
+	},
+	yAxis: [
+		{
+			title: {
+				text: 'RPM',
+				style: {
+					color: Highcharts.getOptions().colors[0]
+				}
+			},
+			labels: {
+				format: '{value}',
+				style: {
+					color: Highcharts.getOptions().colors[0]
+				}
+			},
+		},
+	],
+	tooltip: {
+		shared:true,
+		pointFormat: '{point.x} km/h, {point.y} RPM'
+	},
+	series: [
+		{
+			name:'RPM vs. Speed',
+			data:[],
+			style: {
+					color: Highcharts.getOptions().colors[0]
+				}
+		}
+	]
+});
+var accel_drpm_chart = new Highcharts.Chart({
+	chart: {
+		type: 'scatter',
+		renderTo: 'accel-drpm-chart-container',
+		zoomType: 'xy'
+	},
+	title: {
+		text: 'RPM/s vs. Acceleration'
+	},
+	xAxis: {
+		title: {
+			enabled: true,
+			text: 'Acceleration (km/h/s)'
+		}
+	},
+	yAxis: [
+		{
+			title: {
+				text: 'RPM/s',
+				style: {
+					color: Highcharts.getOptions().colors[0]
+				}
+			},
+			labels: {
+				format: '{value}',
+				style: {
+					color: Highcharts.getOptions().colors[0]
+				}
+			},
+		}
+	],
+	tooltip: {
+		shared:true,
+		pointFormat: '{point.x} km/h/s, {point.y} RPM/s'
+	},
+	series: [
+		{
+			name:'RPM/s vs. Acceleration',
+			data:[],
+			style: {
+					color: Highcharts.getOptions().colors[0]
+				}
+		}
+	]
+});
 differentiate = function(values){
 	// Needs at least 3 points
 	if (values.length < 3)
@@ -287,7 +377,8 @@ loadData = function(vehicle_id, begin_time, end_time){$.ajax({
 	type:"GET",
 	url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/rpm",
 	success:function(msg){
-		chart.series[0].setData(JSON.parse(msg),false);
+		var rpm = JSON.parse(msg)
+		chart.series[0].setData(rpm,false);
 		$.ajax({
 			type:"GET",
 			url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/speed",
@@ -295,8 +386,23 @@ loadData = function(vehicle_id, begin_time, end_time){$.ajax({
 				vel = JSON.parse(msg);
 				chart.series[1].setData(vel,false);
 				vel_accel_chart.series[0].setData(vel,false);
-				vel_accel_chart.series[1].setData(differentiate(vel),true);
-				distance_chart.series[0].setData(integrate(vel),true);
+				var acc = differentiate(vel)
+				vel_accel_chart.series[1].setData(acc,true);
+				var dist = integrate(vel);
+				distance_chart.series[0].setData(dist,true);
+				var velrpm = [];
+				for(var i = 0; i < vel.length; i++)
+				{
+					velrpm.push([vel[i][1],rpm[i][1]]);
+				}
+				vel_rpm_chart.series[0].setData(velrpm,true);
+				var drpm = differentiate(rpm);
+				var acceldrpm = [];
+				for (var i = 0; i < acc.length; i++)
+				{
+					acceldrpm.push([acc[i][1],drpm[i][1]]);
+				}
+				accel_drpm_chart.series[0].setData(acceldrpm,true);
 				$.ajax({
 					type:"GET",
 					url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/load",
