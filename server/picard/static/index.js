@@ -346,6 +346,42 @@ var accel_drpm_chart = new Highcharts.Chart({
 		}
 	]
 });
+var rpm_pie_chart = new Highcharts.Chart({
+	chart: {
+		type: 'scatter',
+		renderTo: 'rpm-pie-chart-container',
+		plotBackgroundColor: null,
+		plotBorderWidth: null,
+		plotShadow: false
+
+	},
+	title: {
+		text: 'Percentage of time spent in each RPM range'
+	},
+	plotOptions: {
+				pie: {
+					allowPointSelect: true,
+					cursor: 'pointer',
+					dataLabels: {
+						enabled: false
+					},
+					showInLegend: true
+				}
+			},
+	tooltip: {
+		pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+	},
+	series: [
+		{
+			name:'RPMs',
+			type: 'pie',
+			data:[],
+			style: {
+					color: Highcharts.getOptions().colors[0]
+				}
+		}
+	]
+});
 differentiate = function(values){
 	// Needs at least 3 points
 	if (values.length < 3)
@@ -377,8 +413,38 @@ loadData = function(vehicle_id, begin_time, end_time){$.ajax({
 	type:"GET",
 	url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/rpm",
 	success:function(msg){
-		var rpm = JSON.parse(msg)
+		var rpm = JSON.parse(msg);
+		var ranges = [['0-1000',0],['1000-2000',0],['2000-3000',0],['3000-4000',0],['4000-5000',0],['5000-6000',0],['6000-7000',0],['7000-8000',0],['8000-9000',0],['9000+',0]];
+		for(var i = 0; i < rpm.length; i++)
+		{
+			var cur = rpm[i][1]
+			if (cur <= 1000)
+				ranges[0][1]++;
+			else if (cur <= 2000)
+				ranges[1][1]++;
+			else if (cur <= 3000)
+				ranges[2][1]++;
+			else if (cur <= 4000)
+				ranges[3][1]++;
+			else if (cur <= 5000)
+				ranges[4][1]++;
+			else if (cur <= 6000)
+				ranges[5][1]++;
+			else if (cur <= 7000)
+				ranges[6][1]++;
+			else if (cur <= 8000)
+				ranges[7][1]++;
+			else if (cur <= 9000)
+				ranges[8][1]++;
+			else
+				ranges[9][1]++;
+		}
+		for (var i = 0; i < ranges.length; i++)
+		{
+			ranges[i][1] = ranges[i][1]/rpm.length;
+		}
 		chart.series[0].setData(rpm,false);
+		rpm_pie_chart.series[0].setData(ranges);
 		$.ajax({
 			type:"GET",
 			url: prefix+"get/"+vehicle_id+"/"+begin_time+"/"+end_time+"/speed",
