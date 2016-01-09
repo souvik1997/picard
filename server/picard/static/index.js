@@ -1,6 +1,6 @@
-var prefix="../api/"
-var end = moment()
-var start = moment().subtract(1, 'month')
+var prefix="../api/";
+var end = moment(1419629174000);
+var start = moment(1419628815000);
 Highcharts.setOptions({
 	global : {
 		useUTC : false
@@ -9,12 +9,12 @@ Highcharts.setOptions({
 var generateDropdownElement = function(obj) {
 	return '<li role="presentation"><a role="menuitem" tabindex="-1" href="#" onclick=\'selectCar("'+obj+'")\'>'+obj+'</a></li>'
 }
-var selected_car = ""
+var selected_car = "";
 var selectCar = function(obj) {
-	$("#dropdownMenu1").html(obj+' <span class="caret"></span>')
-	chart.setTitle({text:'On Board Diagnostic Data'},{text:'Data collected from a '+obj}, false)
-	selected_car = obj
-	loadData(obj,start.valueOf(),end.valueOf())
+	$("#dropdownMenu1").html(obj+' <span class="caret"></span>');
+	chart.setTitle({text:'On Board Diagnostic Data'},{text:'Data collected from a '+obj}, false);
+	selected_car = obj;
+	loadData(obj,start.valueOf(),end.valueOf());
 }
 var chart = new Highcharts.Chart({
 	chart: {
@@ -385,29 +385,29 @@ var rpm_pie_chart = new Highcharts.Chart({
 differentiate = function(values, k){
 	// Needs at least 3 points
 	if (values.length < 3)
-		return null
-	res = []
+		return null;
+	res = [];
 	for(var x = 1; x < values.length-1; x++)
 	{
-		slope = (values[x+1][1]-values[x-1][1])/(values[x+1][0]-values[x-1][0]) * k
-		res.push([values[x][0],slope])
+		slope = (values[x+1][1]-values[x-1][1])/(values[x+1][0]-values[x-1][0]) * k;
+		res.push([values[x][0],slope]);
 	}
-	return res
+	return res;
 }
 
 integrate = function(values, k){
 	//Needs at least 2 points
 	if (values.length < 2)
-		return null
-	sum = 0
-	res = []
-	res.push([values[0][0],sum]) //initial distance at 0
+		return null;
+	sum = 0;
+	res = [];
+	res.push([values[0][0],sum]); //initial distance at 0
 	for(var x = 1; x < values.length; x++)
 	{
-		sum += (values[x][1]+values[x-1][1])/2 * (values[x][0]-values[x-1][0])/k
-		res.push([values[x][0],sum])
+		sum += (values[x][1]+values[x-1][1])/2 * (values[x][0]-values[x-1][0])/k;
+		res.push([values[x][0],sum]);
 	}
-	return res
+	return res;
 }
 loadData = function(vehicle_id, begin_time, end_time){$.ajax({
 	type:"GET",
@@ -497,18 +497,18 @@ $(document).ready(function() {
 		}, function(start, end, label) {
 		loadData(selected_car,start.valueOf(),end.valueOf())
 	});
-	$('#daterange').val(start.format("MM/DD/YYYY") + " - " +end.format("MM/DD/YYYY"))
+	$('#daterange').val(start.format("MM/DD/YYYY") + " - " +end.format("MM/DD/YYYY"));
 	$.ajax({
 		type:"GET",
 		url: prefix+"list/vehicle_id",
 		success: function(data) {
 			var index, len;
-			arr = JSON.parse(data)
-			initial_car = arr[0]
+			arr = JSON.parse(data);
+			initial_car = arr[0];
 			for (index = 0, len = arr.length; index < len; ++index) {
 				$("#dropdownul").append(generateDropdownElement(arr[index]));
 			}
-			selectCar(initial_car)
+			selectCar(initial_car);
 		}
 	});
 });
